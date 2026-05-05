@@ -1,2 +1,2 @@
-# first-python
-github入门
+# first
+
