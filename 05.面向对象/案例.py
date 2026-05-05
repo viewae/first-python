@@ -157,6 +157,34 @@ class library:
         return f"图书馆: {len(self.books)}本图书, {len(self.members)}个会员"
 
 
+def display_menu():
+    """显示主菜单"""
+    print("\n" + "="*50)
+    print("       图书馆管理系统")
+    print("="*50)
+    print("1. 注册新会员")
+    print("2. 会员登录")
+    print("3. 查看所有图书")
+    print("4. 查找图书")
+    print("5. 退出系统")
+    print("="*50)
+
+
+def member_menu():
+    """显示会员操作菜单"""
+    print("\n" + "-"*50)
+    print("       会员操作菜单")
+    print("-"*50)
+    print("1. 查看个人信息")
+    print("2. 查看所有图书")
+    print("3. 查找图书")
+    print("4. 借书")
+    print("5. 还书")
+    print("6. 查看已借书籍")
+    print("7. 退出登录")
+    print("-"*50)
+
+
 def main():
     """主程序入口"""
     # 创建图书馆实例
@@ -178,61 +206,152 @@ def main():
     print("欢迎使用图书馆管理系统")
     print("="*50)
 
-    # 注册示例会员
-    member1 = normal_member("张三", "user001", "123456")
-    member2 = vip("李四", "vip001", "123456", level=2)
-    
-    lib.register_member(member1)
-    lib.register_member(member2)
+    current_user = None
 
-    # 模拟登录和操作
-    print("\n--- 测试普通会员功能 ---")
-    current_user = lib.login("user001", "123456")
-    if current_user:
-        print(current_user)
-        
-        # 显示所有图书
-        print("\n所有图书:")
-        for b in lib.get_all_books():
-            print(f"  {b}")
-        
-        # 借书
-        print("\n尝试借书:")
-        python_book = lib.find_book("Python")[0]
-        java_book = lib.find_book("Java")[0]
-        ai_book = lib.find_book("人工智能")[0]
-        
-        current_user.borrow_book(python_book)
-        current_user.borrow_book(java_book)
-        current_user.borrow_book(ai_book)
-        
-        # 查看已借书籍
-        print(f"\n{current_user.name}的已借书籍:")
-        for borrowed in current_user.get_borrowed_books():
-            print(f"  《{borrowed.name}》")
-        
-        # 还书
-        print("\n尝试还书:")
-        current_user.return_book(python_book)
-        
-        print(f"\n{current_user}")
+    while True:
+        if current_user is None:
+            # 未登录状态，显示主菜单
+            display_menu()
+            choice = input("\n请选择操作 (1-5): ").strip()
 
-    print("\n--- 测试VIP会员功能 ---")
-    current_user = lib.login("vip001", "123456")
-    if current_user:
-        print(current_user)
-        
-        # VIP可以借更多书
-        print("\nVIP会员借书测试:")
-        all_books = lib.get_all_books()
-        for b in all_books[:5]:  # 尝试借5本书
-            current_user.borrow_book(b)
-        
-        print(f"\n{current_user}")
+            if choice == '1':
+                # 注册新会员
+                print("\n--- 注册新会员 ---")
+                name = input("请输入姓名: ").strip()
+                account = input("请输入账号: ").strip()
+                password = input("请输入密码: ").strip()
+                
+                # 选择会员类型
+                member_type = input("请选择会员类型 (1-普通会员 2-VIP会员): ").strip()
+                if member_type == '2':
+                    level = int(input("请输入VIP等级 (1-5): ").strip())
+                    new_member = vip(name, account, password, level)
+                else:
+                    new_member = normal_member(name, account, password)
+                
+                lib.register_member(new_member)
 
-    print("\n" + "="*50)
-    print("感谢使用图书馆管理系统！")
-    print("="*50)
+            elif choice == '2':
+                # 会员登录
+                print("\n--- 会员登录 ---")
+                account = input("请输入账号: ").strip()
+                password = input("请输入密码: ").strip()
+                current_user = lib.login(account, password)
+
+            elif choice == '3':
+                # 查看所有图书
+                print("\n所有图书:")
+                all_books = lib.get_all_books()
+                if all_books:
+                    for i, b in enumerate(all_books, 1):
+                        print(f"  {i}. {b}")
+                else:
+                    print("  暂无图书")
+
+            elif choice == '4':
+                # 查找图书
+                keyword = input("\n请输入搜索关键词（书名或作者）: ").strip()
+                results = lib.find_book(keyword)
+                if results:
+                    print(f"\n找到 {len(results)} 本相关图书:")
+                    for b in results:
+                        print(f"  {b}")
+                else:
+                    print("未找到相关图书")
+
+            elif choice == '5':
+                # 退出系统
+                print("\n感谢使用图书馆管理系统，再见！")
+                break
+
+            else:
+                print("无效选择，请重新输入")
+
+        else:
+            # 已登录状态，显示会员菜单
+            member_menu()
+            choice = input("\n请选择操作 (1-7): ").strip()
+
+            if choice == '1':
+                # 查看个人信息
+                print(f"\n{current_user}")
+
+            elif choice == '2':
+                # 查看所有图书
+                print("\n所有图书:")
+                all_books = lib.get_all_books()
+                if all_books:
+                    for i, b in enumerate(all_books, 1):
+                        print(f"  {i}. {b}")
+                else:
+                    print("  暂无图书")
+
+            elif choice == '3':
+                # 查找图书
+                keyword = input("\n请输入搜索关键词（书名或作者）: ").strip()
+                results = lib.find_book(keyword)
+                if results:
+                    print(f"\n找到 {len(results)} 本相关图书:")
+                    for i, b in enumerate(results, 1):
+                        print(f"  {i}. {b}")
+                else:
+                    print("未找到相关图书")
+
+            elif choice == '4':
+                # 借书
+                print("\n可借图书:")
+                available_books = [b for b in lib.get_all_books() if b.available_num > 0]
+                if available_books:
+                    for i, b in enumerate(available_books, 1):
+                        print(f"  {i}. {b}")
+                    
+                    try:
+                        book_idx = int(input("\n请选择要借的图书编号: ").strip()) - 1
+                        if 0 <= book_idx < len(available_books):
+                            current_user.borrow_book(available_books[book_idx])
+                        else:
+                            print("无效的图书编号")
+                    except ValueError:
+                        print("请输入有效的数字")
+                else:
+                    print("当前没有可借的图书")
+
+            elif choice == '5':
+                # 还书
+                borrowed = current_user.get_borrowed_books()
+                if borrowed:
+                    print("\n已借图书:")
+                    for i, b in enumerate(borrowed, 1):
+                        print(f"  {i}. {b}")
+                    
+                    try:
+                        book_idx = int(input("\n请选择要还的图书编号: ").strip()) - 1
+                        if 0 <= book_idx < len(borrowed):
+                            current_user.return_book(borrowed[book_idx])
+                        else:
+                            print("无效的图书编号")
+                    except ValueError:
+                        print("请输入有效的数字")
+                else:
+                    print("您当前没有借阅任何图书")
+
+            elif choice == '6':
+                # 查看已借书籍
+                borrowed = current_user.get_borrowed_books()
+                if borrowed:
+                    print(f"\n{current_user.name}的已借书籍:")
+                    for i, b in enumerate(borrowed, 1):
+                        print(f"  {i}. 《{b.name}》 by {b.author}")
+                else:
+                    print("您当前没有借阅任何图书")
+
+            elif choice == '7':
+                # 退出登录
+                print(f"\n{current_user.name}，您已退出登录")
+                current_user = None
+
+            else:
+                print("无效选择，请重新输入")
 
 
 if __name__ == "__main__":
