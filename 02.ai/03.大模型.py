@@ -29,14 +29,14 @@ def save_current_session():
 def get_all_sessions():
     """获取所有保存的会话"""
     try:
-        with open('sessions.json', 'r', encoding='utf-8') as f:
+        with open('resources/sessions.json', 'r', encoding='utf-8') as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
 def save_sessions_to_file(sessions):
     """保存会话到文件，新建一个json文件"""
-    with open('sessions.json', 'w', encoding='utf-8') as f:
+    with open('resources/sessions.json', 'w', encoding='utf-8') as f:
         json.dump(sessions, f, ensure_ascii=False, indent=2)
 
 def load_session(session_name):
